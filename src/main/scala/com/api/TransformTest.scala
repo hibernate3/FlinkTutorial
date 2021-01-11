@@ -1,7 +1,7 @@
 package com.api
 
-import org.apache.flink.api.common.functions.ReduceFunction
-import org.apache.flink.streaming.api.scala.{OutputTag, StreamExecutionEnvironment}
+import org.apache.flink.api.common.functions.{FilterFunction, ReduceFunction}
+import org.apache.flink.streaming.api.scala.{DataStream, OutputTag, StreamExecutionEnvironment}
 import org.apache.flink.api.scala._
 import org.apache.flink.streaming.api.functions.ProcessFunction
 import org.apache.flink.util.Collector
@@ -69,6 +69,10 @@ object TransformTest {
     //union合流
     val unionStream = splitStream.getSideOutput(highTag).union(splitStream.getSideOutput(lowTag))
 
+    //自定义函数类
+    val myFilterStream: DataStream[SensorReading] = dataStream.filter(new MyFilter)
+//    myFilterStream.print()
+
     env.execute("transform test")
   }
 }
@@ -76,5 +80,11 @@ object TransformTest {
 class MyReduceFunction extends ReduceFunction[SensorReading] {
   override def reduce(value1: SensorReading, value2: SensorReading): SensorReading = {
     SensorReading(value1.id, value2.timestamp, value1.temperature.min(value2.temperature))
+  }
+}
+
+class MyFilter extends FilterFunction[SensorReading] {
+  override def filter(value: SensorReading): Boolean = {
+    value.id.startsWith("sensor_1")
   }
 }

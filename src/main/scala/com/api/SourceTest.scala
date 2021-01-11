@@ -2,7 +2,7 @@ package com.api
 
 import java.util.Properties
 import org.apache.flink.api.common.serialization.SimpleStringSchema
-import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
+import org.apache.flink.streaming.api.scala.{DataStream, StreamExecutionEnvironment}
 import org.apache.flink.api.scala._
 import org.apache.flink.streaming.api.functions.source.SourceFunction
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer
@@ -26,7 +26,7 @@ object SourceTest {
     //    stream1.print()
 
     val inputPath = "/Users/hdb-dsj-003/Documents/IdeaProjects/FlinkTutorial/src/main/resources/sensor.txt"
-    val stream2 = env.readTextFile(inputPath)
+    val stream2: DataStream[String] = env.readTextFile(inputPath)
     //    stream2.print()
 
     //kafka
